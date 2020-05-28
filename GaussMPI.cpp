@@ -64,7 +64,7 @@ void backSubstitution()
 }
 
 /* This function performs gaussian elimination with MPI implementation through static interleave */
-void gauss(int N)
+void gauss()
 {
 	double wp_time, wa_time = 0;
 	MPI_Request request;
@@ -80,7 +80,7 @@ void gauss(int N)
 
 	for (k = 0; k < N - 1; k++)
 	{
-		//Broadcsting X's and Y's matrix from 0th rank processor to all other processors.
+		//Broadcsting A's and B's matrix from 0th rank processor to all other processors.
 		MPI_Bcast(&A[k][0], N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 		MPI_Bcast(&B[k], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
@@ -90,7 +90,7 @@ void gauss(int N)
 			{
 				for (i = k + 1 + p; i < N; i += proc)
 				{
-					/* Sending X and y matrix from oth to all other processors using non blocking send*/
+					/* Sending A and B matrix from oth to all other processors using non blocking send*/
 					MPI_Isend(&A[i], N, MPI_DOUBLE, p, 0, MPI_COMM_WORLD, &request);
 					MPI_Wait(&request, &status);
 					MPI_Isend(&B[i], 1, MPI_DOUBLE, p, 0, MPI_COMM_WORLD, &request);
@@ -120,10 +120,9 @@ void gauss(int N)
 			if (k == N - 2)
 			{
 				wp_time = MPI_Wtime();
+				printf("Time for calculating = %f\n", wp_time - wa_time);
 			}
 		}
-
-
 		else
 		{
 			for (i = k + 1 + id; i < N; i += proc)
@@ -146,7 +145,6 @@ void gauss(int N)
 	}
 }
 
-/*  Printing Solution Matrix Z   */
 void printAnswer()
 {
 	int row;
@@ -182,7 +180,7 @@ int main(int argc, char* argv[])
 		start_time = clock();
 	}
 
-	gauss(N);//implementing the gaussian elimination
+	gauss();//implementing the gaussian elimination
 
 	if (id == 0)
 	{
@@ -191,13 +189,12 @@ int main(int argc, char* argv[])
 		/* Stop Clock */
 		unsigned int end_time = clock();
 		printf("Stopped clock.\n");
-		
+
 		/* Display output */
 		printAnswer();
 
 		unsigned int search_time = end_time - start_time;
-		printf("Time for calculating: %i ms)\n",
-			search_time);
+		//printf("Time for calculating: %i ms)\n", search_time);
 	}
 	MPI_Finalize(); //Finalizing the MPI
 	return 0;
