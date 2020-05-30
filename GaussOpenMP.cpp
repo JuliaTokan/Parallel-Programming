@@ -108,10 +108,6 @@ void gauss() {
             B[row] -= B[norm] * multiplier;
         }
     }
-    /* (Diagonal elements are not normalized to 1.  This is treated in back
-     * substitution.)
-     */
-
 
      /* Back substitution */
     for (row = N - 1; row >= 0; row--) {
