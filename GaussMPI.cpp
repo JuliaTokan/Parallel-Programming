@@ -62,7 +62,7 @@ void gauss()
         {
             if (id == p)
             {
-                mp = A[k][k] / A[k][proc * k + p];
+                mp = 1.0 / A[k][proc * k + p];
                 for (j = MAXN; j >= proc * k + p; j--)
                     A[k][j] = A[k][j] * mp;
                 for (j = 0; j <= MAXN; j++)
